@@ -1,5 +1,8 @@
 using TicTacToe.Application.Configurations;
+using TicTacToe.Infrastructure;
 using TicTacToe.Infrastructure.Configurations;
+using TicTacToe.Interfaces;
+using TicTacToeGame.Api;
 using TicTacToeGame.Api.Hubs;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +15,7 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddSignalR();
 builder.Services.AddInfrastructure(builder.Configuration);
+builder.Services.AddTransient<IGameRepository, GameRepository>();
 builder.Services.AddApplication(builder.Configuration);
 builder.Services.AddCors(options =>
 {
@@ -19,8 +23,9 @@ builder.Services.AddCors(options =>
     {
         policy.AllowAnyHeader()
             .AllowAnyMethod()
-            .WithOrigins("http://localhost:3000")
-            .AllowCredentials();
+            .AllowAnyHeader()
+            .AllowCredentials()
+            .SetIsOriginAllowed(_ => true);
     });
 });
 

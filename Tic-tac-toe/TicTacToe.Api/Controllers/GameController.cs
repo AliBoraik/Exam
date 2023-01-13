@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using TicTacToe.Domain.Games;
 using TicTacToe.Interfaces;
 
 namespace TicTacToeGame.Api.Controllers;
@@ -7,18 +8,30 @@ namespace TicTacToeGame.Api.Controllers;
 [Route("[controller]")]
 public class GameController : ControllerBase
 {
-    private readonly ILogger<GameController> _logger;
-    private readonly IGameService _gameService;
+    private readonly IGameRepository _repository;
 
-    public GameController(ILogger<GameController> logger, IGameService gameService)
+    public GameController(IGameRepository repository)
     {
-        _logger = logger;
-        _gameService = gameService;
+        _repository = repository;
     }
     
     [HttpGet]
     public IActionResult All()
     {
-        return Ok(_gameService.GetAll());
+        return Ok(_repository.GetAllGames());
+    }
+
+    [HttpGet("CreateGame")]
+    public async Task<IActionResult> CreateGame(string userId)
+    {
+        var player = await _repository.FindPlayer(userId);
+        if (player == null)
+            throw new AggregateException("Player not auth!");
+        Game newGame = new Game
+        {
+            Player1 = player
+        };
+        await _repository.CreateGame(newGame);
+        return Ok();
     }
 }
