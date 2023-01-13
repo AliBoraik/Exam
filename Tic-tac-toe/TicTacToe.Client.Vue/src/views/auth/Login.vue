@@ -37,7 +37,7 @@ const submit = async () => {
     return;
   const {data, status} = await $api.post("/Auth/login", {username: login.value, password: password.value});
   console.log(data)
-  setCookie("access_token", "123", 1);
+  setCookie("access_token", data.token, 1);
   await router.push({path: "/"});
 }
 </script>
