@@ -1,0 +1,42 @@
+version: '3.4'
+
+services:
+  server:
+    build:
+      dockerfile: TicTacToe.Api/Dockerfile
+    container_name: 'server'
+    ports:
+      - '5035:80'
+    environment:
+#      CONNECTION_STRING_DOCKER: "host=db;Database=game;Port=5432;Username=postgres;Password=admin"
+      ASPNETCORE_ENVIRONMENT: Development
+      
+  client:
+    build: TicTacToe.Client/
+    container_name: 'client'
+    ports:
+      - '3000:3000'  
+      
+  db:
+    build:
+      dockerfile: ./DataBase/dockerfile-db
+    container_name: db
+    ports:
+      - '5432:5433'
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "admin"
+      POSTGRES_DB: "game"
+      
+  rabbitmq:
+    container_name: "rabbitmq"
+    image: rabbitmq:3.7-management
+    ports:
+      - "5672:5672"
+      - "15672:15672"    
+  
+  redis:
+    container_name: "redis"
+    image: 'redis:latest'
+    ports:
+      - '6379:6379'      
