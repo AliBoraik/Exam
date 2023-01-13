@@ -1,5 +1,12 @@
-﻿using TicTacToe.Domain;
+﻿using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
+using System.Text;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.IdentityModel.Tokens;
+using TicTacToe.Domain.Games;
+using TicTacToe.Domain.Login;
+using TicTacToe.Interfaces;
 
 namespace TicTacToeGame.Api.Controllers;
 
@@ -7,31 +14,80 @@ namespace TicTacToeGame.Api.Controllers;
 [Route("[controller]")]
 public class AuthController : ControllerBase
 {
-    private static readonly List<string> users = new()
-    {
-        "Ali"
-    };
-    private readonly ILogger<AuthController> _logger;
+    private readonly UserManager<IdentityUser> userManager;
+    private readonly IGameRepository _gameRepository;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(ILogger<AuthController> logger)
+    public AuthController(UserManager<IdentityUser> userManager, IConfiguration configuration, IGameRepository gameRepository)
     {
-        _logger = logger;
+        this.userManager = userManager;
+        _configuration = configuration;
+        _gameRepository = gameRepository;
     }
-    
-    [HttpPost("login")]
-    public IActionResult LogIn(User user)
+
+    [HttpPost]
+    [Route("login")]
+    public async Task<IActionResult> Login([FromBody] LoginModel model)
     {
-        if (users.Any(u => user.Name.Equals(u)))
+        var user = await userManager.FindByNameAsync(model.Username);
+        if (user != null && await userManager.CheckPasswordAsync(user, model.Password))
         {
-            return BadRequest();
-        } 
-        //users.Add(user.Name);
-       return Ok();
+            await userManager.GetRolesAsync(user);
+
+            var authClaims = new List<Claim>
+            {
+                new(JwtRegisteredClaimNames.Sub, user.Id)
+            };
+
+            var secretKey = _configuration["JWT:Secret"];
+            if (secretKey == null)
+                throw new AggregateException("Not found secret key!");
+
+            var authSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(secretKey));
+            var token = new JwtSecurityToken(
+                issuer: _configuration["JWT:ValidIssuer"],
+                audience: _configuration["JWT:ValidAudience"],
+                expires: DateTime.Now.AddHours(3),
+                claims: authClaims,
+                signingCredentials: new SigningCredentials(authSigningKey, SecurityAlgorithms.HmacSha256)
+            );
+            return Ok(new
+            {
+                token = new JwtSecurityTokenHandler().WriteToken(token),
+                expiration = token.ValidTo
+            });
+        }
+
+        return Unauthorized();
     }
-    
-    [HttpPost("all")]
-    public IActionResult All()
+
+    [HttpPost]
+    [Route("register")]
+    public async Task<IActionResult> Register([FromBody] RegisterModel model)
     {
-        return Ok(users);
+        var userExists = await userManager.FindByNameAsync(model.Username);
+        if (userExists != null)
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new Response { Status = "Error", Message = "User already exists!" });
+
+        IdentityUser user = new IdentityUser
+        {
+            Email = model.Email,
+            SecurityStamp = Guid.NewGuid().ToString(),
+            UserName = model.Username,
+        };
+        var result = await userManager.CreateAsync(user, model.Password);
+        
+        if (!result.Succeeded)
+            return StatusCode(StatusCodes.Status500InternalServerError,
+                new Response
+                    { Status = "Error", Message = "User creation failed! Please check user details and try again." });
+        await _gameRepository.CreatePlayer(new Player
+        {
+            PlayerId = user.Id,
+            Name = user.UserName,
+            Rating = 10
+        });
+        return Ok(new Response { Status = "Success", Message = "User created successfully!" });
     }
 }

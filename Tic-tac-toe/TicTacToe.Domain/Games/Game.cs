@@ -1,4 +1,7 @@
 ﻿using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Text.Json.Serialization;
+using TicTacToe.Domain.Enum;
 using static System.Guid;
 
 namespace TicTacToe.Domain.Games
@@ -7,10 +10,12 @@ namespace TicTacToe.Domain.Games
     {
         [Key]
         public string Id { get; set; }
-        public Player Player1 { get; init; } = null!;
-        public Player Player2 { get; set; } = null!;
+        
+        public Player? Player1 { get; init; }
+        public Player? Player2 { get; set; }
         public Board Board;
         public bool IsFirstPlayersTurn;
+        public GameStatus Status { get; set; }
         private readonly int[,] _winCombination;
         public Result? Result;
         private bool IsFirstPlayerPlaying;
@@ -18,6 +23,7 @@ namespace TicTacToe.Domain.Games
         public Game()
         {
             Id = NewGuid().ToString("d");
+            Status = GameStatus.Waiting;
             IsFirstPlayersTurn = true;
             Board = new Board();
             _winCombination = new[,]
@@ -88,6 +94,7 @@ namespace TicTacToe.Domain.Games
         {
             Board = new Board();
             Result = null;
+            Status = GameStatus.InProgress;
         }
     }
 }
