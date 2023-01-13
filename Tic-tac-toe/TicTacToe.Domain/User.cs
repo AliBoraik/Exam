@@ -1,6 +1,10 @@
-﻿namespace TicTacToe.Domain;
+﻿using System.ComponentModel.DataAnnotations;
+
+namespace TicTacToe.Domain;
 
 public class User
 {
-    public string Name { get; set; }
+    [Required] public string UserName { get; set; }
+    [Required] public string Password { get; set; }
+    [Required] public string Email { get; set; }
 }

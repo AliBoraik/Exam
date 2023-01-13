@@ -1,20 +1,24 @@
 ﻿using System.Dynamic;
+using Microsoft.AspNetCore.Identity;
 using TicTacToe.Domain.Games;
 
 namespace TicTacToe.Interfaces;
 
 
-public interface IGameService
+public interface IGameRepository
 {
-    List<Game?> GetAll();
+    List<Game> GetAllGames();
 
-    Game Get(string id);
+    Task<Game?> GetGame(string id);
     
-    void Create(Game game);
+    Task CreateGame(Game game);
+    Task<bool> UpdateGame(Game? game);
 
-    void Remove(string id);
+    Task<Player?> FindPlayer(string id);
 
-    Game? FindFreeGame();
+    Task<Game?> FindFreeGame();
 
-    int Get();
+    Task CreatePlayer(Player? player);
+
+
 }

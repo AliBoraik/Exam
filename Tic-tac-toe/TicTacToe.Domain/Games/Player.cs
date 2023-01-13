@@ -1,14 +1,12 @@
-﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.EntityFrameworkCore;
-
-namespace TicTacToe.Domain.Games
+﻿namespace TicTacToe.Domain.Games
 {
     public class Player
     {
-        [Key]
-        public int PlayerId { get; set; }
+        public string PlayerId { get; set; }
+
+        public int Rating { get; set; } = 10;
         public string Name { get; set; }
-        public string ConnectionId { get; set; }
-        public string PlayerSign { get; set; }
+        public string? ConnectionId { get; set; }
+        public string?PlayerSign { get; set; }
     }
 }
