@@ -28,11 +28,11 @@ export default function ListGames({token}) {
     function createGame(username) {
         return <TicTacToe token={username}/>
     }
-    
+
     return (
         <div className="container">
             <h3 className="p-3 text-center">Display a list of Games</h3>
-            <button onClick={()=> { createGame(token)}} >Create game</button>
+            <button onClick={() => { createGame(token)}} >Create game</button>
             <table className="table table-striped table-bordered">
                 <thead>
                 <tr>
