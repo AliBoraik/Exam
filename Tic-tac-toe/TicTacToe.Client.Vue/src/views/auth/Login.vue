@@ -35,9 +35,9 @@ const setPassword = (value: string) => {
 const submit = async () => {
   if(login.value === "" || password.value === "")
     return;
-  /*const {data, status} = await $api.post(""); //todo: fetch to api */
+  const {data, status} = await $api.post("/Auth/login", {username: login.value, password: password.value});
+  console.log(data)
   setCookie("access_token", "123", 1);
-  //todo: redirect to games list
   await router.push({path: "/"});
 }
 </script>

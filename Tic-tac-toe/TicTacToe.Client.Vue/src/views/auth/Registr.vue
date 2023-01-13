@@ -44,10 +44,10 @@ const submit = async () => {
     return;
   if(password.value !== repeatPassword.value)
     return;
-  //const {data, status} = await $api.post(""); //todo: fetch to api
+  const {data, status} = await $api.post("/Auth/register", {username: login.value, password: password.value, email: login.value});
+  console.log(data);
   setCookie("access_token", "123", 1);
   await router.push({path: "/"});
-  //todo: redirect to games list
 }
 </script>
 
