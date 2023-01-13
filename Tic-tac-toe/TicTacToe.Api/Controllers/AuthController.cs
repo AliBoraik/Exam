@@ -84,10 +84,20 @@ public class AuthController : ControllerBase
                     { Status = "Error", Message = "User creation failed! Please check user details and try again." });
         await _gameRepository.CreatePlayer(new Player
         {
-            PlayerId = user.Id,
+            Id = user.Id,
             Name = user.UserName,
             Rating = 10
         });
         return Ok(new Response { Status = "Success", Message = "User created successfully!" });
+    }
+    [HttpPost]
+    [Route("token")]
+    public async Task<IActionResult> CreatePost(string key)
+    {
+        var token = new JwtSecurityTokenHandler().ReadJwtToken(key);
+        if (token == null)
+            return NotFound();
+        var userId = token.Claims.First().Value;
+        return Ok(userId);
     }
 }

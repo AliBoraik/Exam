@@ -17,9 +17,9 @@ public class GameRepository : IGameRepository
         this.userManager = userManager;
     }
 
-    public List<Game> GetAllGames()
+    public async Task<List<Game>> GetAllGames()
     {
-        return _ctx.Games.ToList();
+        return await _ctx.Games.Include(g => g.Players).ToListAsync();
     }
 
     public async Task<Game?> GetGame(string id)

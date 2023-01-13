@@ -24,12 +24,12 @@ public class GameHub : Hub
             throw new AggregateException($"Game with {groupName} not found!");
         
         // player1 already waiting...  
-        game.Player2 = player;
-        game.Player1.PlayerSign = "X";
-        game.Player2.PlayerSign = "O";
+        game.Players.Add(player);
+        game.Players[0].PlayerSign = "X";
+        game.Players[1].PlayerSign = "O";
         game.IsFirstPlayersTurn = false;
-        await Groups.AddToGroupAsync(game.Player1.ConnectionId, game.Id);
-        await Groups.AddToGroupAsync(game.Player2.ConnectionId, game.Id);
+        await Groups.AddToGroupAsync(game.Players[0].ConnectionId, game.Id);
+        await Groups.AddToGroupAsync(game.Players[1].ConnectionId, game.Id);
         await Clients.Group(game.Id).SendAsync("GroupName", game.Id);
         await _repository.UpdateGame(game);
     }

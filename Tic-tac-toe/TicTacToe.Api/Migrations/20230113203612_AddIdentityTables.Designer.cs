@@ -12,7 +12,7 @@ using TicTacToe.Infrastructure;
 namespace TicTacToeGame.Api.Migrations
 {
     [DbContext(typeof(GameDataContext))]
-    [Migration("20230113151546_AddIdentityTables")]
+    [Migration("20230113203612_AddIdentityTables")]
     partial class AddIdentityTables
     {
         /// <inheritdoc />
@@ -226,34 +226,26 @@ namespace TicTacToeGame.Api.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("text");
 
-                    b.Property<string>("Player1PlayerId")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Player2PlayerId")
-                        .HasColumnType("text");
-
                     b.Property<int>("Status")
                         .HasColumnType("integer");
 
                     b.HasKey("Id");
-
-                    b.HasIndex("Player1PlayerId");
-
-                    b.HasIndex("Player2PlayerId");
 
                     b.ToTable("Games");
                 });
 
             modelBuilder.Entity("TicTacToe.Domain.Games.Player", b =>
                 {
-                    b.Property<string>("PlayerId")
+                    b.Property<string>("Id")
                         .HasColumnType("text");
 
                     b.Property<string>("ConnectionId")
                         .HasColumnType("text");
 
+                    b.Property<string>("GameId")
+                        .HasColumnType("text");
+
                     b.Property<string>("Name")
-                        .IsRequired()
                         .HasColumnType("text");
 
                     b.Property<string>("PlayerSign")
@@ -262,7 +254,9 @@ namespace TicTacToeGame.Api.Migrations
                     b.Property<int>("Rating")
                         .HasColumnType("integer");
 
-                    b.HasKey("PlayerId");
+                    b.HasKey("Id");
+
+                    b.HasIndex("GameId");
 
                     b.ToTable("Players");
                 });
@@ -318,19 +312,18 @@ namespace TicTacToeGame.Api.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("TicTacToe.Domain.Games.Player", b =>
+                {
+                    b.HasOne("TicTacToe.Domain.Games.Game", "Game")
+                        .WithMany("Players")
+                        .HasForeignKey("GameId");
+
+                    b.Navigation("Game");
+                });
+
             modelBuilder.Entity("TicTacToe.Domain.Games.Game", b =>
                 {
-                    b.HasOne("TicTacToe.Domain.Games.Player", "Player1")
-                        .WithMany()
-                        .HasForeignKey("Player1PlayerId");
-
-                    b.HasOne("TicTacToe.Domain.Games.Player", "Player2")
-                        .WithMany()
-                        .HasForeignKey("Player2PlayerId");
-
-                    b.Navigation("Player1");
-
-                    b.Navigation("Player2");
+                    b.Navigation("Players");
                 });
 #pragma warning restore 612, 618
         }
