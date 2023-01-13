@@ -31,8 +31,8 @@ public class GameController : ControllerBase
         var player = await _repository.FindPlayer(userId);
         if (player == null)
             return Unauthorized();
-        Game? newGame = new Game();
-        newGame.Status = GameStatus.InProgress;
+        Game newGame = new Game();
+        newGame.Status = GameStatus.Waiting;
         newGame.Players.Add(player);
         var groupId = await _repository.CreateGame(newGame);
         return Ok(groupId);

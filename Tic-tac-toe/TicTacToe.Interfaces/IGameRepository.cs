@@ -11,14 +11,14 @@ public interface IGameRepository
 
     Task<Game?> GetGame(string id);
     
-    Task<string> CreateGame(Game? game);
-    Task<bool> UpdateGame(Game? game);
+    Task<string> CreateGame(Game game);
+    Task<bool> UpdateGame(Game game);
 
     Task<Player?> FindPlayer(string id);
 
     Task<Game?> FindFreeGame();
 
-    Task CreatePlayer(Player player);
+    Task CreatePlayer(Player? player);
 
 
 }

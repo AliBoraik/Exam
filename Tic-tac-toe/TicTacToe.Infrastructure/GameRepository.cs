@@ -27,18 +27,18 @@ public class GameRepository : IGameRepository
         return await _ctx.Games.FirstOrDefaultAsync(game => game.Id == id);
     }
 
-    public async Task<string> CreateGame(Game? game)
+    public async Task<string> CreateGame(Game game)
     {
         await _ctx.Games.AddAsync(game);
         await _ctx.SaveChangesAsync();
         return game.Id;
     }
-    public async Task<bool> UpdateGame(Game? game)
+    public async Task<bool> UpdateGame(Game game)
     {
         try
         {
             _ctx.Games.Update(game);
-            _ctx.Players.Update(game.Players[1]);
+            _ctx.Players.Update(game.Players[0] == null ? game.Players[0] : game.Players[1]);
             await _ctx.SaveChangesAsync();
             return true;
         }
@@ -65,7 +65,7 @@ public class GameRepository : IGameRepository
         return g;
     }
 
-    public async Task CreatePlayer(Player player)
+    public async Task CreatePlayer(Player? player)
     {
          await _ctx.Players.AddAsync(player);
          await _ctx.SaveChangesAsync();
