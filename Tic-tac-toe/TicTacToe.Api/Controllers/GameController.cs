@@ -1,5 +1,4 @@
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using TicTacToe.Domain.Enum;
 using TicTacToe.Domain.Games;
 using TicTacToe.Infrastructure;
@@ -32,10 +31,10 @@ public class GameController : ControllerBase
         var player = await _repository.FindPlayer(userId);
         if (player == null)
             return Unauthorized();
-        Game newGame = new Game();
+        Game? newGame = new Game();
         newGame.Status = GameStatus.InProgress;
         newGame.Players.Add(player);
-        await _repository.CreateGame(newGame);
-        return Ok();
+        var groupId = await _repository.CreateGame(newGame);
+        return Ok(groupId);
     }
 }
