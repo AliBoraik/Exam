@@ -14,8 +14,7 @@ public static class ConfigurePostgres
         services.AddDbContext<GameDataContext>(options =>
         {
             var dockerEnv = Environment.GetEnvironmentVariable("CONNECTION_STRING_DOCKER");
-           // options.UseNpgsql(dockerEnv ?? configuration.GetConnectionString("GameDB"));
-           var connection = dockerEnv ?? configuration.GetConnectionString("GameDB");
+            var connection = dockerEnv ?? configuration.GetConnectionString("GameDB");
            options.UseNpgsql(connection, b => b.MigrationsAssembly("TicTacToe.Api"));
         });
         // For Identity  

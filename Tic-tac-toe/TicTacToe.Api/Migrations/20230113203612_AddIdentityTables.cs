@@ -52,18 +52,15 @@ namespace TicTacToeGame.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Players",
+                name: "Games",
                 columns: table => new
                 {
-                    PlayerId = table.Column<string>(type: "text", nullable: false),
-                    Rating = table.Column<int>(type: "integer", nullable: false),
-                    Name = table.Column<string>(type: "text", nullable: false),
-                    ConnectionId = table.Column<string>(type: "text", nullable: true),
-                    PlayerSign = table.Column<string>(type: "text", nullable: true)
+                    Id = table.Column<string>(type: "text", nullable: false),
+                    Status = table.Column<int>(type: "integer", nullable: false)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Players", x => x.PlayerId);
+                    table.PrimaryKey("PK_Games", x => x.Id);
                 });
 
             migrationBuilder.CreateTable(
@@ -173,27 +170,24 @@ namespace TicTacToeGame.Api.Migrations
                 });
 
             migrationBuilder.CreateTable(
-                name: "Games",
+                name: "Players",
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "text", nullable: false),
-                    Player1PlayerId = table.Column<string>(type: "text", nullable: true),
-                    Player2PlayerId = table.Column<string>(type: "text", nullable: true),
-                    Status = table.Column<int>(type: "integer", nullable: false)
+                    Rating = table.Column<int>(type: "integer", nullable: false),
+                    Name = table.Column<string>(type: "text", nullable: true),
+                    ConnectionId = table.Column<string>(type: "text", nullable: true),
+                    PlayerSign = table.Column<string>(type: "text", nullable: true),
+                    GameId = table.Column<string>(type: "text", nullable: true)
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Games", x => x.Id);
+                    table.PrimaryKey("PK_Players", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Games_Players_Player1PlayerId",
-                        column: x => x.Player1PlayerId,
-                        principalTable: "Players",
-                        principalColumn: "PlayerId");
-                    table.ForeignKey(
-                        name: "FK_Games_Players_Player2PlayerId",
-                        column: x => x.Player2PlayerId,
-                        principalTable: "Players",
-                        principalColumn: "PlayerId");
+                        name: "FK_Players_Games_GameId",
+                        column: x => x.GameId,
+                        principalTable: "Games",
+                        principalColumn: "Id");
                 });
 
             migrationBuilder.CreateIndex(
@@ -234,14 +228,9 @@ namespace TicTacToeGame.Api.Migrations
                 unique: true);
 
             migrationBuilder.CreateIndex(
-                name: "IX_Games_Player1PlayerId",
-                table: "Games",
-                column: "Player1PlayerId");
-
-            migrationBuilder.CreateIndex(
-                name: "IX_Games_Player2PlayerId",
-                table: "Games",
-                column: "Player2PlayerId");
+                name: "IX_Players_GameId",
+                table: "Players",
+                column: "GameId");
         }
 
         /// <inheritdoc />
@@ -263,7 +252,7 @@ namespace TicTacToeGame.Api.Migrations
                 name: "AspNetUserTokens");
 
             migrationBuilder.DropTable(
-                name: "Games");
+                name: "Players");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");
@@ -272,7 +261,7 @@ namespace TicTacToeGame.Api.Migrations
                 name: "AspNetUsers");
 
             migrationBuilder.DropTable(
-                name: "Players");
+                name: "Games");
         }
     }
 }
