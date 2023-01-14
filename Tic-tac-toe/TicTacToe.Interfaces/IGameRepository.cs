@@ -11,8 +11,8 @@ public interface IGameRepository
 
     Task<Game?> GetGame(string id);
     
-    Task CreateGame(Game game);
-    Task<bool> UpdateGame(Game? game);
+    Task<string> CreateGame(Game game);
+    Task<bool> UpdateGame(Game game);
 
     Task<Player?> FindPlayer(string id);
 

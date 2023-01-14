@@ -6,7 +6,7 @@ namespace TicTacToe.Domain.Games
     public class Game
     {
         public string Id { get; set; }
-        public List<Player> Players { get; set; }
+        public List<Player?> Players { get; set; }
         
         public Board Board;
         public bool IsFirstPlayersTurn;
@@ -21,7 +21,7 @@ namespace TicTacToe.Domain.Games
             Status = GameStatus.Waiting;
             IsFirstPlayersTurn = true;
             Board = new Board();
-            Players = new List<Player>();
+            Players = new List<Player?>();
             _winCombination = new[,]
             {
                 { 0, 1, 2 },
@@ -81,7 +81,7 @@ namespace TicTacToe.Domain.Games
             Board.Pieces[index] = pieceToPlace;
             return new UpdateBoard(Board.Pieces);
         }
-        public Player GetPlayerById(string id)
+        public Player? GetPlayerById(string id)
         {
             return Players[0].ConnectionId == id ? Players[0] : Players[1];
         }

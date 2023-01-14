@@ -24,21 +24,21 @@ public class GameRepository : IGameRepository
 
     public async Task<Game?> GetGame(string id)
     {
-        return await _ctx.Games.FirstOrDefaultAsync(game => game.Id == id)!;
+        return await _ctx.Games.FirstOrDefaultAsync(game => game.Id == id);
     }
 
-    public async Task CreateGame(Game game)
+    public async Task<string> CreateGame(Game game)
     {
         await _ctx.Games.AddAsync(game);
         await _ctx.SaveChangesAsync();
+        return game.Id;
     }
-    public async Task<bool> UpdateGame(Game? game)
+    public async Task<bool> UpdateGame(Game game)
     {
         try
         {
-            var ctxGame = await _ctx.Games.FindAsync(game.Id);
-            if (ctxGame == null) return false;
-            _ctx.Games.Update(ctxGame);
+            _ctx.Games.Update(game);
+            _ctx.Players.Update(game.Players[0] == null ? game.Players[0] : game.Players[1]);
             await _ctx.SaveChangesAsync();
             return true;
         }
@@ -61,7 +61,7 @@ public class GameRepository : IGameRepository
     
     public async Task<Game?> FindFreeGame()
     {
-        var g = await _ctx.Games.FirstOrDefaultAsync(g => g.Status == GameStatus.Waiting);
+        var g = _ctx.Games.Include(g => g.Players).FirstOrDefault(g => g.Status == GameStatus.Waiting);
         return g;
     }
 
