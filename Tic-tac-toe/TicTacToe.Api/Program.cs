@@ -44,5 +44,5 @@ app.UseCors();
 app.UseAuthorization();
 
 app.MapControllers();
-app.MapHub<GameHub>("gameHub");
+app.MapHub<GameHub>("/gameHub");
 app.Run();

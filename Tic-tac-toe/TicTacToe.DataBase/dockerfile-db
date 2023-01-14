@@ -1,5 +1,0 @@
-FROM postgres:latest
-ENV POSTGRES_USER postgres
-ENV POSTGRES_PASSWORD admin
-ENV POSTGRES_DB game
-#COPY DataBase/SQL/* /docker-entrypoint-initdb.d/

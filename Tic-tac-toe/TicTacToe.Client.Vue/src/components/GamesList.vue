@@ -3,10 +3,10 @@
     <div v-for="game in games" class="game">
       <div class="players">
         <div class="player1">
-          {{game.player1.playerSign}}: {{game.player1.name}}
+          {{game.players[0]?.playerSign}}: {{game.players[0]?.name}}
         </div>
         <div class="player2">
-          {{game.player2?.playerSign}}: {{game.player2?.name}}
+          {{game.players[1]?.playerSign}}: {{game.players[1]?.name}}
         </div>
       </div>
       <div class="status">
@@ -23,77 +23,18 @@
 import {ref} from "vue";
 import Button from "@/components/UI/Button.vue";
 import {useRouter} from "vue-router";
+import $api from "@/utils/api";
 
 const router = useRouter();
 
 interface Game {
   id: string,
-  player1: {
-    playerId: number,
-    rating: number,
-    name: string,
-    connectionId: string,
-    playerSign: string
-  },
-  player2: {
-    playerId: number,
-    rating: number,
-    name: string,
-    connectionId: string,
-    playerSign: string
-  } | null,
+  players: Array<{id: string, rating: number, name: string, connectionId: string, playerSign: string} | null>
   status: number
 }
 
 const games = ref<Array<Game>>([
-  {
-    id: "1",
-    player1: {
-      playerId: 1,
-      rating: 10,
-      name: "123",
-      connectionId: "123",
-      playerSign: "X"
-    },
-    player2: {
-      playerId: 2,
-      rating: 12,
-      name: "321",
-      connectionId: "123",
-      playerSign: "O"
-    },
-    status: 1
-  },
-  {
-    id: "1",
-    player1: {
-      playerId: 1,
-      rating: 10,
-      name: "123",
-      connectionId: "123",
-      playerSign: "X"
-    },
-    player2: null,
-    status: 0
-  },
-  {
-    id: "1",
-    player1: {
-      playerId: 1,
-      rating: 10,
-      name: "123",
-      connectionId: "123",
-      playerSign: "X"
-    },
-    player2: {
-      playerId: 2,
-      rating: 12,
-      name: "321",
-      connectionId: "123",
-      playerSign: "O"
-    },
-    status: 2
-  }
+
 ]);
 
 const getStatus = (value: number) => {
@@ -114,7 +55,9 @@ const join = (id: string, status: number) => {
 
 const vBeforeMount = {
   beforeMount: async () => {
-    //todo: fetch games
+    const {data, status} = await $api.get("/Game");
+
+    games.value = data;
   }
 }
 </script>

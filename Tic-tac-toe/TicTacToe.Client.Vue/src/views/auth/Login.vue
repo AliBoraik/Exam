@@ -45,7 +45,7 @@ const submit = async () => {
 }
 
 const getUseId = async (token: string) => {
-  const {data, status} = await $api.get(`/Auth/token?key=${token}`)
+  const {data, status} = await $api.post(`/Auth/token?key=${token}`)
   return data;
 }
 </script>

@@ -58,7 +58,8 @@ const router = useRouter();
 
 const createGame =  async () => {
   const userId = window.localStorage.getItem("userId");
-  const {data, status} = await $api.post(`/Game/CreateGame?userId=${userId}`);
+  const {data, status} = await $api.get(`/Game/CreateGame?userId=${userId}`);
+  console.log(data)
   await router.push({path: `/game/x/${data}`});
 }
 

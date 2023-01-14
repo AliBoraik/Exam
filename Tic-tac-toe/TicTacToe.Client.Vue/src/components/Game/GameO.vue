@@ -1,5 +1,5 @@
 <template>
-  <div class="game">
+  <div v-before-mount class="game">
     <div class="game-field">
       <div class="grid-wrapper">
         <Grid :game="game" :grid="grid" :value="Value.O" @fillSection="fillSection"/>
@@ -14,6 +14,8 @@ import {GameStatus} from "@/types/GameStatus";
 import {ref} from "vue";
 import {Game} from "@/types/Game";
 import {Value} from "@/types/Value";
+import {HttpTransportType, HubConnectionBuilder} from "@microsoft/signalr";
+import {API_BASE_URL} from "@/utils/consts";
 
 const game = ref<Game>({
   PlayerX: "",
@@ -21,15 +23,35 @@ const game = ref<Game>({
   GameStatus: GameStatus.InProcess,
   GameResult: undefined});
 
-const grid = ref<Array<Value | null>>([
-    null, null, null,
-    null, null, null,
-    null, null, null
-])
+const grid = ref<Array<string | null>>([])
+
+
+const connection = new HubConnectionBuilder().withUrl(
+    API_BASE_URL + "/gameHub",
+    {
+      transport: HttpTransportType.LongPolling,
+    }).build();
+
+
+const restartGame = () => {
+  grid.value.forEach(el => el = null)
+  connection.invoke("RestartGame", "groupName");
+}
+
+const vBeforeMount = {
+  beforeMount: async () => {
+    await connection.start();
+    await connection.invoke("JoinToGame", "groupId", window.localStorage.getItem("userId"));
+    connection.on("StartGame", id => { alert(`Game #${id} started`) });
+    connection.on("UpdateBoard", board => {console.log(board); grid.value = board; });
+    connection.on("GameOver",result => {game.value.GameResult = result; alert(game.value.GameResult)});
+  }
+}
 
 const fillSection = (index: number) => {
-  grid.value[index] = Value.O
+  connection.invoke("PlacePiece", "GroupName" ,index);
 }
+
 </script>
 
 <style scoped>
