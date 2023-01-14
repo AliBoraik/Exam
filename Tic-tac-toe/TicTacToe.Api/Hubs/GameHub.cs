@@ -15,25 +15,39 @@ public class GameHub : Hub
     }
     public async Task JoinToGame(string groupName,string userId)
     {
+        // get player by Id
         var player = await _repository.FindPlayer(userId);
         if (player == null)
             throw new AggregateException("Player not auth!");
-        
+        // get Game by Id
         var game = await _repository.GetGame(groupName);
+        Console.WriteLine(game.Board.Pieces.Length);
         if (game == null)
             throw new AggregateException($"Game with {groupName} not found!");
-        
-        // player1 already waiting...  
-        game.Player2 = player;
-        game.Player1.PlayerSign = "X";
-        game.Player2.PlayerSign = "O";
-        game.IsFirstPlayersTurn = false;
-        await Groups.AddToGroupAsync(game.Player1.ConnectionId, game.Id);
-        await Groups.AddToGroupAsync(game.Player2.ConnectionId, game.Id);
-        await Clients.Group(game.Id).SendAsync("GroupName", game.Id);
+        // add ConnectionId to player
+        player.ConnectionId = Context.ConnectionId;
+        // add to group
+        await Groups.AddToGroupAsync(player.ConnectionId, game.Id);
+        // check if the player is first one or second 
+        if (game.Players[0] == null)
+        {
+            // add first player
+            player.PlayerSign = "X";
+            game.Players.Add(player);
+            game.IsFirstPlayersTurn = false;
+        }
+        else
+        {
+            // add second  player
+            player.PlayerSign = "O";
+            game.Players.Add(player);
+            // send to players message (StartGame)
+            await Clients.Group(game.Id).SendAsync("StartGame", game.Id);
+        }
         await _repository.UpdateGame(game);
     }
 
+    // TODO Рейтинг 
     public async Task PlacePiece(string groupName, int index)
     {
         Game? game = await _repository.GetGame(groupName);
@@ -52,7 +66,6 @@ public class GameHub : Hub
             await Clients.Group(groupName).SendAsync("GameOver", result);
         }
     }
-    
     public async Task RestartGame(string groupName)
     {
         var game = await _repository.GetGame(groupName);

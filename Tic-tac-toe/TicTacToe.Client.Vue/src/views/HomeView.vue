@@ -56,12 +56,11 @@ import $api from "@/utils/api";
 
 const router = useRouter();
 
-const createGame = () => {
- /* $api.post("").then((res) => {
-    router.push({path: `/game/x/${res.data}`})
-  });
-  */ //todo: request create game -> get created game id -> connect with this id
-  router.push({path: `/game/x/`});
+const createGame =  async () => {
+  const userId = window.localStorage.getItem("userId");
+  const {data, status} = await $api.get(`/Game/CreateGame?userId=${userId}`);
+  console.log(data)
+  await router.push({path: `/game/x/${data}`});
 }
 
 </script>

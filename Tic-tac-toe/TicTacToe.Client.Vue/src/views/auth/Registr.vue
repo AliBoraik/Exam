@@ -45,9 +45,7 @@ const submit = async () => {
   if(password.value !== repeatPassword.value)
     return;
   const {data, status} = await $api.post("/Auth/register", {username: login.value, password: password.value, email: login.value});
-  console.log(data);
-  setCookie("access_token", "123", 1);
-  await router.push({path: "/"});
+  await router.push({path: "/login"});
 }
 </script>
 

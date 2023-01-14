@@ -1,18 +1,13 @@
-﻿using System.ComponentModel.DataAnnotations;
-using System.ComponentModel.DataAnnotations.Schema;
-using System.Text.Json.Serialization;
-using TicTacToe.Domain.Enum;
+﻿using TicTacToe.Domain.Enum;
 using static System.Guid;
 
 namespace TicTacToe.Domain.Games
 {
     public class Game
     {
-        [Key]
         public string Id { get; set; }
+        public List<Player?> Players { get; set; }
         
-        public Player? Player1 { get; init; }
-        public Player? Player2 { get; set; }
         public Board Board;
         public bool IsFirstPlayersTurn;
         public GameStatus Status { get; set; }
@@ -26,6 +21,7 @@ namespace TicTacToe.Domain.Games
             Status = GameStatus.Waiting;
             IsFirstPlayersTurn = true;
             Board = new Board();
+            Players = new List<Player?>();
             _winCombination = new[,]
             {
                 { 0, 1, 2 },
@@ -44,20 +40,20 @@ namespace TicTacToe.Domain.Games
             for (int i = 0; i < 8; i++)
             {
                 //* X win check
-                if (Board.Pieces[_winCombination[i, 0]] == Player1.PlayerSign
-                    && Board.Pieces[_winCombination[i, 1]] == Player1.PlayerSign
-                    && Board.Pieces[_winCombination[i, 2]] == Player1.PlayerSign)
+                if (Board.Pieces[_winCombination[i, 0]] == Players[0].PlayerSign
+                    && Board.Pieces[_winCombination[i, 1]] == Players[0].PlayerSign
+                    && Board.Pieces[_winCombination[i, 2]] == Players[0].PlayerSign)
                 {
-                    Result = new Result(Player1, Id);
+                    Result = new Result(Players[0], Id);
                     //Result = $"{Player1.Name} WON";
                     return true;
                 }
                 //* O win check
-                if (Board.Pieces[_winCombination[i, 0]] == Player2.PlayerSign
-                    && Board.Pieces[_winCombination[i, 1]] == Player2.PlayerSign
-                    && Board.Pieces[_winCombination[i, 2]] == Player2.PlayerSign)
+                if (Board.Pieces[_winCombination[i, 0]] == Players[1].PlayerSign
+                    && Board.Pieces[_winCombination[i, 1]] == Players[1].PlayerSign
+                    && Board.Pieces[_winCombination[i, 2]] == Players[1].PlayerSign)
                 {
-                    Result = new Result(Player2, Id);
+                    Result = new Result(Players[1], Id);
                     //Result = $"{Player2.Name} WON";
                     return true;
                 }
@@ -74,20 +70,20 @@ namespace TicTacToe.Domain.Games
             // To verify the player's eligibility to play
             if (!IsFirstPlayerPlaying)
             {
-                if (Player1.PlayerSign != pieceToPlace) return null;
+                if (Players[0].PlayerSign != pieceToPlace) return null;
                 IsFirstPlayerPlaying = true;
                 Board.Pieces[index] = pieceToPlace;
                 return new UpdateBoard(Board.Pieces);
             }
-            if (Player2.PlayerSign != pieceToPlace) return null;
+            if (Players[1].PlayerSign != pieceToPlace) return null;
             
             IsFirstPlayerPlaying = false;
             Board.Pieces[index] = pieceToPlace;
             return new UpdateBoard(Board.Pieces);
         }
-        public Player GetPlayerById(string id)
+        public Player? GetPlayerById(string id)
         {
-            return Player1.ConnectionId == id ? Player1 : Player2;
+            return Players[0].ConnectionId == id ? Players[0] : Players[1];
         }
 
         public void RestartGame()

@@ -5,5 +5,5 @@ export type Game = {
     PlayerX?: string,
     PlayerO?: string,
     GameStatus: GameStatus,
-    GameResult?: GameResult;
+    GameResult?: string;
 }

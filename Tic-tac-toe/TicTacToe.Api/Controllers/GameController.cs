@@ -1,5 +1,7 @@
 using Microsoft.AspNetCore.Mvc;
+using TicTacToe.Domain.Enum;
 using TicTacToe.Domain.Games;
+using TicTacToe.Infrastructure;
 using TicTacToe.Interfaces;
 
 namespace TicTacToeGame.Api.Controllers;
@@ -9,16 +11,18 @@ namespace TicTacToeGame.Api.Controllers;
 public class GameController : ControllerBase
 {
     private readonly IGameRepository _repository;
+    private readonly GameDataContext _ctx;
 
-    public GameController(IGameRepository repository)
+    public GameController(IGameRepository repository, GameDataContext ctx)
     {
         _repository = repository;
+        _ctx = ctx;
     }
     
     [HttpGet]
-    public IActionResult All()
+    public async Task<IActionResult> All()
     {
-        return Ok(_repository.GetAllGames());
+        return Ok( await _repository.GetAllGames());
     }
 
     [HttpGet("CreateGame")]
@@ -26,12 +30,11 @@ public class GameController : ControllerBase
     {
         var player = await _repository.FindPlayer(userId);
         if (player == null)
-            throw new AggregateException("Player not auth!");
-        Game newGame = new Game
-        {
-            Player1 = player
-        };
-        await _repository.CreateGame(newGame);
-        return Ok();
+            return Unauthorized();
+        Game newGame = new Game();
+        newGame.Status = GameStatus.Waiting;
+        newGame.Players.Add(player);
+        var groupId = await _repository.CreateGame(newGame);
+        return Ok(groupId);
     }
 }

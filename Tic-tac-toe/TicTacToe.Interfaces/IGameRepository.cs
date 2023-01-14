@@ -7,12 +7,12 @@ namespace TicTacToe.Interfaces;
 
 public interface IGameRepository
 {
-    List<Game> GetAllGames();
+    Task<List<Game>> GetAllGames();
 
     Task<Game?> GetGame(string id);
     
-    Task CreateGame(Game game);
-    Task<bool> UpdateGame(Game? game);
+    Task<string> CreateGame(Game game);
+    Task<bool> UpdateGame(Game game);
 
     Task<Player?> FindPlayer(string id);
 

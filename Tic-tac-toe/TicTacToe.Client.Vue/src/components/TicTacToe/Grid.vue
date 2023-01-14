@@ -1,7 +1,7 @@
 <template>
   <div class="grid">
     <div v-for="(n, i) in 9">
-        <Section :value="grid[i]" @click="fillSection(i)"/>
+        <Section :value="grid[i] ?? null" @click="fillSection(i)"/>
     </div>
   </div>
 </template>
@@ -16,7 +16,7 @@ import {Game} from "@/types/Game";
 
 interface Props {
   game: Game
-  grid: Array<Value | null>
+  grid: Array<string | null>
   value?: Value
 }
 
