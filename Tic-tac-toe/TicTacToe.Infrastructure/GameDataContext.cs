@@ -12,8 +12,8 @@ public class GameDataContext :IdentityDbContext<IdentityUser>
     {  
   
     }
-    public DbSet<Game> Games { get; set; } = null!;
-    public DbSet<Player> Players { get; set; } = null!;
+    public DbSet<Game?> Games { get; set; } = null!;
+    public DbSet<Player?> Players { get; set; } = null!;
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
